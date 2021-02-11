@@ -1,0 +1,316 @@
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <title>Lab Activity</title>
+      <meta charset="utf-8">
+
+      <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+      <link rel="stylesheet" href="./styles.css">
+      <link
+         type="text/css"
+         rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+         /> 
+         
+      <script src="https://unpkg.com/vue"></script>
+      <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+   </head>
+   <body>
+      <main>
+         <a name="top">
+            <div class="text-black">
+            <div class="math">
+            <div class="container" id="math">
+            <template v-if="showLessons">
+               <div  class="page-holder bg-cover">
+                  <div class="container py-5">
+                     <header class="text-center text-black py-5">
+                        <h1 class="display-4 font-weight-bold mb-4">After School Club</h1>
+                        <br> <br>
+                        <img class="headimg"src="../images/book.svg">
+                     </header>
+         </a>
+         <form>
+         <div class="radioDesign">
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio" id="price" v-model="category"  value="price" >
+         <label class="form-check-label" for="inlineRadio1">Sort by Price</label>
+         </div>
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio" id="inlineRadio2" v-model="category"  value="title">
+         <label class="form-check-label" for="inlineRadio2">Sort by Name</label>
+         </div>
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio" id="inlineRadio3"v-model="category" value="location"  >
+         <label class="form-check-label" for="inlineRadio1">Sort by Location</label>
+         </div>
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio" id="inlineRadio4"v-model="category" value="spaces"  >
+         <label class="form-check-label" for="inlineRadio1">Sort by Stock</label>
+         </div>
+         </form>
+         <form id="test">
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio2" id="inlineRadio5" v-model="order"   value="asc" >
+         <label class="form-check-label" for="inlineRadio2">Sort by asc</label>
+         </div>
+         <div class="form-check form-check-inline">
+         <input class="form-check-input" type="radio" name="radio2" id="inlineRadio5" v-model="order"  value="desc" >
+         <label class="form-check-label" for="inlineRadio2">Sort by desc</label>
+         </div>
+         </form>
+         <br> <br>
+         <div class="row ">
+         <div v-for="lessons in sortAsc"  class="col-md-4 col-sm-5 my-1 mt-5">
+         <div class="card h-100  ">
+         <img :src="lessons.image" class="card-img-top">
+         <div class="card-body">
+         <div class="card-title">
+         <h2 class="lead" v-html="lessons.title"></h2>
+         </div>
+         <p class="lead" v-text="lessons.location"></p>
+         <div>
+         <span class="badge badge-info">${{ lessons.price }}</span>
+         </div>
+         <p class="lead">Number of spaces: {{ lessons.spaces}}</p>
+         <b-button variant="outline-secondary" v-on:click="addToCart(lessons)" v-if='canAddToCart(lessons)'> Add to Cart </b-button>
+         <button disabled='disabled' v-else>Stock Over</button>
+         <span v-if='lessons.spaces ===0'>All out!</span>
+         <span v-else-if="lessons.spaces - cartCount(lessons.id) ">
+         Only {{lessons.spaces }} left!</span>
+         <span v-else>Buy now!</span>
+         </div>
+         </div>
+         </div>
+         </div>
+         <template v-if="cart.length >0">
+         <b-button style="margin-top: 2%;" variant="outline-primary"  v-on:click='showCheckout'>
+         <a href="#top">Checkout</a>
+         {{cartItemCount}}
+         <i class="fas fa-shopping-cart"></i>
+         </button>
+         </template>
+         <b-button variant="outline-danger" style="margin-top: 2%;" disabled='disabled'  v-else>Please add items to Checkout</button>
+         </template>
+         <template v-else>   
+         <h2 class="check">Checkout</h2>
+         <div class="col text-center">
+         <b-button variant="outline-primary" v-on:click='showCheckout'>
+         {{cartItemCount}}
+         <i class="fas fa-shopping-cart"></i>Back to Product List
+         </b-button>
+      </div>
+         <div v-for="lessons in sortAsc" class=" col-md-5 my-1 mt-5">
+         <div class="container">
+         <template v-if="checkSubject(lessons)">
+         <div class="card">
+         <img :src="lessons.image" class="card-img-top">
+         <div class="card-title">
+         <h2 class="lead" v-html="lessons.title"></h2>
+         </div>
+         <p class="lead" v-text="lessons.location"></p>
+         <div>
+         <span class="badge badge-info">${{ lessons.price }}</span>
+         </div>
+         <p class="lead">In cart x :{{ Math.abs( orders.quantity )}}</p>
+         <b-button variant="outline-danger" v-on:click="removeFromCart(lessons)"> Remove from Cart </b-button>
+         </div>
+         </template>
+         </div>
+         </div>
+         <div class="container">
+            <form class="text-center">
+               <div class="form-group">
+                 <label>First Name</label>
+                 <input class="form-control"  aria-describedby="emailHelp" placeholder="Enter First Name"v-model.trim="orders.firstName" onkeypress="return /[a-z]/i.test(event.key)">
+               </div>
+               <div class="form-group">
+                  <label >Last Name</label>
+                  <input class="form-control"  aria-describedby="emailHelp" placeholder="Enter Last Name"input  v-model.trim="orders.lastName" onkeypress="return /[a-z]/i.test(event.key)">
+                </div>
+                <div class="form-group">
+                  <label >Phone Number</label>
+                  <input class="form-control"  aria-describedby="emailHelp" placeholder="Please enter numericals only"input  v-model.trim="orders.Phone" onkeypress="return /[0-9]/i.test(event.key)">
+                  <small id="emailHelp" class="form-text text-muted">{{orders.Phone}}</small>
+                </div>
+               </div>
+</form>
+      <template v-if='orders.firstName !=="" && orders.lastName !==""&& orders.Phone!=="" && cart.length!==0 '>
+         <b-button style="margin-bottom: 6%; margin-left: 45%; align-self: center; margin-top: 5%; "variant='outline-primary' v-on:click = "submitForm">Submit Order</b-button>
+      </template>   
+      <template v-else>
+         <b-button style="margin-bottom: 5%; margin-left: 35%; align-self: center; margin-top: 6%; " variant='outline-danger' disabled='disabled'>Please check all the input fields or your cart</b-button>
+      </template>
+   </template>
+</div>
+ </div>     
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+  var spacesValue;
+  var newSpaces;
+  let store = new Vue({
+    el: ".math",
+    data: {
+      lessons: [],
+      cart: [],
+      showLessons: true,
+      show: "one",
+      category: "",
+      order: "",
+      orders: {
+        firstName: "",
+        lastName: "",
+        Phone: "",
+        cardNo: "",
+        quantity: 0,
+      },
+    },
+    created: function () {
+      console.log("requesting data");
+
+      fetch("https://cst-coursework-2.herokuapp.com/collection/lessons/").then(function (
+        response
+      ) {
+        response.json().then(function (json) {
+          store.lessons = json;
+          console.log("displaying lessons");
+        });
+      });
+    },
+    methods: {
+      removeFromCart(lessons) {
+        lessons.spaces++;
+        this.cart.splice(this.cart.indexOf(lessons.id), 1);
+      },
+      submitForm() {
+        var first = {
+          order: this.cart,
+          first: this.orders.firstName,
+          last: this.orders.lastName,
+          phoneNo: this.orders.Phone,
+          quantityOrdered: this.orders.quantity,
+        };
+
+        fetch("https://cst-coursework-2.herokuapp.com/collection/orders/", {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          credentials: "same-origin", // set the HTTP method as 'POST'
+          headers: {
+            "Content-Type": "application/json",
+             // set the data type as JSON
+          },
+          body: JSON.stringify(first), // need to stringify the JSON object
+        });
+        for (var i = 0; i < this.cart.length; i++) {
+          id = this.cart[i]._id;
+          newSpaces = { spaces: this.cart[i].spaces };
+          fetch("https://cst-coursework-2.herokuapp.com/collection/lessons/" + id, {
+            method: "PUT", // set the HTTP method as 'PUT'
+            headers: {
+              "Content-Type": "application/json", // set the data type as JSON
+            },
+            body: JSON.stringify(newSpaces), // need to stringify the JSON object
+          });
+        }
+        alert(
+          "Thank you for your order " +
+            this.orders.firstName +
+            " " +
+            this.orders.lastName
+        );
+        window.location = 'https://cst-coursework-2.herokuapp.com/';
+      },
+      checkSubject(id) {
+        let length = this.cart.length;
+        let found = 0;
+        for (i = 0; i < length; i++) {
+          if (this.cart[i] == id) {
+            found = 1;
+          }
+        }
+        if (found == 1) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
+      showCheckout() {
+        this.showLessons = this.showLessons ? false : true;
+      },
+      addToCart(lessons) {
+        //update new record
+        this.cart.push(lessons);
+        newSpaces = lessons.spaces--;
+        // console.log(this.cartCount(lessons.spaces));
+        this.orders.quantity++;
+      },
+      canAddToCart(lessons) {
+        if(lessons.spaces >0) {
+            return true
+        }
+        else {
+          return false
+        }
+      },
+      cartCount(lessons) {
+        let count = 0;
+        for (let i = 0; i < this.cart.length; i++) {
+          if (this.cart[i] == lessons.id) {
+            count = count + 1;
+          } 
+        }
+        return count; 
+      },
+    },
+    computed: {
+      sortAsc() {
+        //sorting carried out
+        if (this.category == "price") {
+          if (this.order == "asc") {
+            this.lessons.sort((a, b) => (a.price > b.price ? 1 : -1));
+          } else if (this.order == "desc") {
+            this.lessons.sort((a, b) => (a.price < b.price ? 1 : -1));
+          }
+        } else if (this.category == "title") {
+          if (this.order == "asc") {
+            this.lessons.sort((a, b) => (a.title > b.title ? 1 : -1));
+          } else if (this.order == "desc") {
+            this.lessons.sort((a, b) => (a.title < b.title ? 1 : -1));
+          }
+        } else if (this.category == "location") {
+          if (this.order == "asc") {
+            this.lessons.sort((a, b) => (a.location > b.location ? 1 : -1));
+          } else if (this.order == "desc") {
+            this.lessons.sort((a, b) => (a.location < b.location ? 1 : -1));
+          }
+        } else if (this.category === "spaces") {
+          var sortedArray = this.lessons.sort((a, b) =>
+            a.spaces > b.spaces ? 1 : -1
+          );
+
+          if (this.category === "spaces" && this.order === "asc") {
+            sortedArray.sort((a, b) => (a.spaces > b.spaces ? 1 : -1));
+          }
+          if (this.category === "spaces" && this.order === "desc") {
+            sortedArray.sort((a, b) => (a.spaces < b.spaces ? 1 : -1));
+          }
+        }
+        return this.lessons;
+      },
+      cartItemCount: function () {
+        return this.cart.length || "";
+      },
+    },
+  });
+</script>
+</body>
+</html>
